@@ -36,3 +36,22 @@ variable "availabilty_zone" {
   type = string
 }
 
+variable "jenkins_port" {
+  type = number
+}
+
+variable "sonarqube_port" {
+  type = number
+}
+
+variable "grafana_port" {
+  type = number
+}
+
+variable "http_port" {
+  type = number
+}
+
+variable "ssh_port" {
+  type = number
+}

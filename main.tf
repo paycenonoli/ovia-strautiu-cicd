@@ -105,3 +105,191 @@ resource "aws_route_table_association" "private_subnet_rt_association" {
     subnet_id = aws_subnet.ovia-private_subnet.id
     route_table_id = aws_route_table.ovia-private-rt.id
 }
+
+#  Create Jenkins security group
+resource "aws_security_group" "jenkins-sg" {
+    name = "Jenkins SG"
+    description = "Allow ports 8080 and 22"
+    vpc_id = aws_vpc.ovia-prod-vpc.id
+
+    ingress {
+        description = "Jenkins"
+        from_port = var.jenkins_port
+        to_port = var.jenkins_port
+        protocol = "tcp"
+        cidr_blocks = ["0.0.0.0/0"]
+    }
+
+    ingress {
+        description = "SSH"
+        from_port = var.ssh_port
+        to_port = var.ssh_port
+        protocol = "tcp"
+        cidr_blocks = ["0.0.0.0/0"]
+    }
+
+    egress {
+        from_port = 0
+        to_port = 0
+        protocol = "-1"
+        cidr_blocks = ["0.0.0.0/0"]
+    }
+
+    tags = {
+        Name = "Jenkins SG"
+    } 
+}
+
+#  Create SonarQube security group
+resource "aws_security_group" "sonarqube-sg" {
+    name = "SonarQube SG"
+    description = "Allow ports 9000 and 22"
+    vpc_id = aws_vpc.ovia-prod-vpc.id
+
+    ingress {
+        description = "SonarQube"
+        from_port = var.sonarqube_port
+        to_port = var.sonarqube_port
+        protocol = "tcp"
+        cidr_blocks = ["0.0.0.0/0"]
+    }
+
+    ingress {
+        description = "SSH"
+        from_port = var.ssh_port
+        to_port = var.ssh_port
+        protocol = "tcp"
+        cidr_blocks = ["0.0.0.0/0"]
+    }
+
+    egress {
+        from_port = 0
+        to_port = 0
+        protocol = "-1"
+        cidr_blocks = ["0.0.0.0/0"]
+    }
+
+    tags = {
+        Name = "SonarQube SG"
+    } 
+}
+
+#  Create Ansible security group
+resource "aws_security_group" "ansible-sg" {
+    name = "Ansible SG"
+    description = "Allow port 22"
+    vpc_id = aws_vpc.ovia-prod-vpc.id
+
+    ingress {
+        description = "SSH"
+        from_port = var.ssh_port
+        to_port = var.ssh_port
+        protocol = "tcp"
+        cidr_blocks = ["0.0.0.0/0"]
+    }
+
+    egress {
+        from_port = 0
+        to_port = 0
+        protocol = "-1"
+        cidr_blocks = ["0.0.0.0/0"]
+    }
+
+    tags = {
+        Name = "Ansible SG"
+    } 
+}
+
+#  Create Grafana security group
+resource "aws_security_group" "grafana-sg" {
+    name = "Grafana SG"
+    description = "Allow ports 3000 and 22"
+    vpc_id = aws_vpc.ovia-prod-vpc.id
+
+    ingress {
+        description = "Grafana"
+        from_port = var.grafana_port
+        to_port = var.grafana_port
+        protocol = "tcp"
+        cidr_blocks = ["0.0.0.0/0"]
+    }
+
+    ingress {
+        description = "SSH"
+        from_port = var.ssh_port
+        to_port = var.ssh_port
+        protocol = "tcp"
+        cidr_blocks = ["0.0.0.0/0"]
+    }
+
+    egress {
+        from_port = 0
+        to_port = 0
+        protocol = "-1"
+        cidr_blocks = ["0.0.0.0/0"]
+    }
+
+    tags = {
+        Name = "Grafana SG"
+    } 
+}
+
+#  Create Application security group
+resource "aws_security_group" "app-sg" {
+    name = "Application SG"
+    description = "Allow ports 80 and 22"
+    vpc_id = aws_vpc.ovia-prod-vpc.id
+
+    ingress {
+        description = "Application"
+        from_port = var.http_port
+        to_port = var.http_port
+        protocol = "tcp"
+        cidr_blocks = ["0.0.0.0/0"]
+    }
+
+    ingress {
+        description = "SSH"
+        from_port = var.ssh_port
+        to_port = var.ssh_port
+        protocol = "tcp"
+        cidr_blocks = ["0.0.0.0/0"]
+    }
+
+    egress {
+        from_port = 0
+        to_port = 0
+        protocol = "-1"
+        cidr_blocks = ["0.0.0.0/0"]
+    }
+
+    tags = {
+        Name = "Application SG"
+    } 
+}
+
+#  Create loadBalancer security group
+resource "aws_security_group" "lb-sg" {
+    name = "loadBalancer SG"
+    description = "Allow ports 80"
+    vpc_id = aws_vpc.ovia-prod-vpc.id
+
+    ingress {
+        description = "loadBalancer"
+        from_port = var.http_port
+        to_port = var.http_port
+        protocol = "tcp"
+        cidr_blocks = ["0.0.0.0/0"]
+    }
+
+    egress {
+        from_port = 0
+        to_port = 0
+        protocol = "-1"
+        cidr_blocks = ["0.0.0.0/0"]
+    }
+
+    tags = {
+        Name = "loadBalancer SG"
+    } 
+}
