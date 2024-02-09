@@ -357,3 +357,37 @@ resource "aws_network_acl" "ovia-nacl" {
         Name ="Ovia ACL"
     }
 }
+
+# Create the ECR repository
+resource "aws_ecr_repository" "ovia-ecr-repo" {
+    name = "docker_repository"
+
+    image_scanning_configuration {
+      scan_on_push = true
+    }
+}
+
+# Key Pair
+resource "aws_key_pair" "ovia-keys" {
+    key_name = var.key_name
+    public_key = var.key_value 
+}
+
+# Create S3 bucket for storing terraform state
+# resource "aws_s3_bucket" "ovia-tf-bucket" {
+#   bucket = "ovia-tf-state"
+
+#   tags = {
+#     Name        = "ovia-tf-bucket"
+#     Environment = "Prod"
+#   }
+# }
+
+# Configure the S3 backend
+terraform {
+    backend "s3" {
+        bucket = "ovia-tf-state"
+        key = "prod/terraform.tfstate"
+        region = "us-east-2"
+    }
+}

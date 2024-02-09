@@ -55,3 +55,11 @@ variable "http_port" {
 variable "ssh_port" {
   type = number
 }
+
+variable "key_name" {
+  type = string
+}
+
+variable "key_value" {
+  type = string
+}
