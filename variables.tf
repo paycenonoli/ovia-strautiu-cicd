@@ -32,7 +32,7 @@ variable "private_subnet_cidr" {
   type = string
 }
 
-variable "availabilty_zone" {
+variable "availability_zone" {
   type = string
 }
 
@@ -57,9 +57,22 @@ variable "ssh_port" {
 }
 
 variable "key_name" {
+type = string
+}
+
+# variable "key_value" {
+# type = string
+# }
+
+variable "ubuntu_ami" {
   type = string
 }
 
-variable "key_value" {
+variable "micro_instance" {
   type = string
 }
+
+variable "small_instance" {
+  type = string
+}
+

@@ -60,7 +60,7 @@ resource "aws_route_table" "ovia-private-rt" {
 resource "aws_subnet" "ovia-public_subnet1" {
     vpc_id = aws_vpc.ovia-prod-vpc.id
     cidr_block = var.public_subnet1_cidr
-    availability_zone = var.availabilty_zone
+    availability_zone = var.availability_zone
     map_public_ip_on_launch = true
     tags = {
         Name = "Public subnet 1"
@@ -368,21 +368,21 @@ resource "aws_ecr_repository" "ovia-ecr-repo" {
 }
 
 # Key Pair
-resource "aws_key_pair" "ovia-keys" {
-    key_name = var.key_name
-    public_key = var.key_value 
-}
-
-# Create S3 bucket for storing terraform state
-# resource "aws_s3_bucket" "ovia-tf-bucket" {
-#   bucket = "ovia-tf-state"
-
-#   tags = {
-#     Name        = "ovia-tf-bucket"
-#     Environment = "Prod"
-#   }
+# resource "aws_key_pair" "ovia-keys" {
+#     key_name = var.key_name
+#     public_key = var.key_value 
 # }
 
+/*# Create S3 bucket for storing terraform state
+resource "aws_s3_bucket" "ovia-tf-bucket" {
+  bucket = "ovia-tf-state"
+
+  tags = {
+    Name        = "ovia-tf-bucket"
+    Environment = "Prod"
+  }
+}
+*/
 # Configure the S3 backend
 terraform {
     backend "s3" {
@@ -390,4 +390,57 @@ terraform {
         key = "prod/terraform.tfstate"
         region = "us-east-2"
     }
+}
+
+# Creating the Jenkins instance
+resource "aws_instance" "ovia-Jenkins" {
+    ami = var.ubuntu_ami
+    instance_type = var.micro_instance
+    availability_zone = var.availability_zone
+    subnet_id = aws_subnet.ovia-public_subnet1.id
+    key_name = var.key_name
+    vpc_security_group_ids = [ aws_security_group.jenkins-sg.id ]
+    user_data = file("jenkins_install.sh")
+
+    tags = {
+        Name = "jenkins-server"
+    }
+}
+
+# Create SonarQube instance
+resource "aws_instance" "ovia-SonarQube" {
+    ami = var.ubuntu_ami
+    instance_type = var.small_instance
+    availability_zone = var.availability_zone
+    subnet_id = aws_subnet.ovia-public_subnet1.id
+    key_name = var.key_name
+    vpc_security_group_ids = [ aws_security_group.sonarqube-sg.id ]
+
+    tags = {
+        Name = "SonarQube"
+    }
+}
+
+# Creating the Ansible instance
+resource "aws_instance" "ovia-Ansible" {
+    ami = var.ubuntu_ami
+    instance_type = var.micro_instance
+    availability_zone = var.availability_zone
+    subnet_id = aws_subnet.ovia-public_subnet1.id
+    key_name = var.key_name
+    vpc_security_group_ids = [ aws_security_group.jenkins-sg.id ]
+    user_data = file("ansible_install.sh")
+
+    tags = {
+        Name = "Ansible"
+    }
+}
+
+# Create the launch configuration for application hosts
+resource "aws_launch_configuration" "ovia-app-launch-config" {
+  name = "app-launch-config" 
+  image_id =var.ubuntu_ami 
+  instance_type = var.micro_instance
+  security_groups = [ aws_security_group.app-sg.id ]
+  key_name = var.key_name
 }
