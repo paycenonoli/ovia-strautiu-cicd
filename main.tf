@@ -436,7 +436,7 @@ resource "aws_instance" "ovia-Ansible" {
     }
 }
 
-# Create the launch configuration for application hosts
+# Create the launch configuration for our application hosts
 resource "aws_launch_configuration" "ovia-app-launch-config" {
   name = "app-launch-config" 
   image_id =var.ubuntu_ami 
